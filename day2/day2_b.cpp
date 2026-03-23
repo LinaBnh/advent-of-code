@@ -4,22 +4,33 @@
 
 using namespace std;
 
-//function to check if a number is invalid
+//function to check if a number is invalid (sequences repeated at least twice)
 bool isInvalid(long long n){
     string s = to_string(n);
-
-    //odd length can't be a repeated sequence
-    if (s.size()%2 != 0) return false;
-
-    //otherwise split in two halves and compare
-    int half = s.size() / 2;
-    string left = s.substr(0, half);
-    string right = s.substr(half);
+    int len = s.size();
 
     //no leading zeros allowed
-    if (left[0] == '0') return false;
+    if (s[0] == '0') return false;
 
-    return left == right;
+    //try every possible sequence length that divides the total length
+    //sequence must repeat at least twice, so max length is len/2
+    for (int seqLen=1; seqLen<=len/2; seqLen++){
+        //sequence length must divide total length evenly
+        if (len%seqLen != 0) continue;
+
+        //extract the candidate sequence (first seqLen digits)
+        string seq = s.substr(0, seqLen);
+
+        //rebuild the full number by repeating the sequence
+        string repeat = "";
+        for (int i=0; i<len/seqLen; i++)
+            repeat += seq;
+
+        //if it matches, the number is invalid
+        if (repeat == s) return true;
+    }
+
+    return false;
 }
 
 int main(){
@@ -51,7 +62,7 @@ int main(){
         }
     }
 
-    cout << "Solution part1: " << sum << endl;
+    cout << "Solution part2: " << sum << endl;
 
     return 0;
 }
